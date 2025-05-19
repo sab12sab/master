@@ -1,0 +1,136 @@
+from flask import Blueprint, request, jsonify
+from app import db
+from app.models.product import Product
+
+bp = Blueprint('product', __name__, url_prefix='/products')
+
+@bp.route("/", methods=["GET"])
+def get_all_products():
+    try:
+        products = Product.query.all()  # Get all products from the database
+        
+        # Format the product data as a list of dictionaries
+        product_list = [
+            {
+                'id': product.id,
+                'name': product.name,
+                'description': product.description,
+                'image': product.image,
+                'price': product.price,
+                'stock': product.stock,
+                'category': {
+                    'id': product.category.id,
+                    'name': product.category.name,
+                    'image': product.category.image
+                }
+            }
+            for product in products
+        ]
+        
+        return jsonify(product_list), 200  # Return the list as JSON
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@bp.route("/", methods=["POST"])
+def add_product():
+    try:
+        data = request.get_json()
+
+        name = data.get('name')
+        description = data.get('description')
+        image = data.get('image')
+        price = data.get('price')
+        stock = data.get('stock', 0) 
+        category_id = data.get('category_id')
+
+        if not name or not description or not image or not price or not category_id:
+            return jsonify({"message": "Missing required fields"}), 400
+        
+        new_product = Product(
+            name=name,
+            description=description,
+            image=image,
+            price=price,
+            stock=stock,
+            category_id=category_id
+        )
+
+        db.session.add(new_product)
+        db.session.commit()
+        return jsonify({"message": "Product added successfully", "product": new_product.id}), 201
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": str(e)}), 500
+
+@bp.route('/<int:id>', methods=['DELETE'])
+def delete_product(id):
+    try:
+        product = Product.query.get(id)
+
+        if not product:
+            return jsonify({"message": "Product not found"}), 404
+
+        db.session.delete(product)
+        db.session.commit()
+
+        return jsonify({"message": "Product deleted successfully"}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": str(e)}), 500
+
+
+@bp.route('/<int:id>', methods=['PUT'])
+def update_product(id):
+    try:
+        # Get data from the request
+        data = request.get_json()
+
+        # Find the product by id
+        product = Product.query.get(id)
+
+        if not product:
+            return jsonify({"message": "Product not found"}), 404
+
+        # Update the product attributes
+        product.name = data.get('name', product.name)
+        product.description = data.get('description', product.description)
+        product.image = data.get('image', product.image)
+        product.price = data.get('price', product.price)
+        product.stock = data.get('stock', product.stock)
+        product.category_id = data.get('category_id', product.category_id)
+
+        # Commit changes to the database
+        db.session.commit()
+
+        return jsonify({"message": "Product updated successfully", "product": product.id}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": str(e)}), 500
+
+
+@bp.route('/category/<int:category_id>', methods=['GET'])
+def get_products_by_category(category_id):
+    try:
+        products = Product.query.filter_by(category_id=category_id).all()
+
+        if not products:
+            return jsonify({"message": "No products found in this category"}), 404
+
+        product_list = [{
+            "id": product.id,
+            "name": product.name,
+            "description": product.description,
+            "image": product.image,
+            "price": product.price,
+            "stock": product.stock,
+            "category_id": product.category_id
+        } for product in products]
+
+        return jsonify({"products": product_list}), 200
+
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500
