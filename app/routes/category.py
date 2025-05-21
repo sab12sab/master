@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from app import db
-from app.models.product import Category
+from app.models.Category import Category
 bp = Blueprint('category', __name__, url_prefix='/category')
 
 @bp.route('/', methods=['POST'])

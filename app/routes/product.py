@@ -1,6 +1,8 @@
 from flask import Blueprint, request, jsonify
 from app import db
 from app.models.product import Product
+from app.Services.user_services import User_services
+from app.Services.produit_services import Services_produit
 
 bp = Blueprint('product', __name__, url_prefix='/products')
 
@@ -18,16 +20,13 @@ def get_all_products():
                 'image': product.image,
                 'price': product.price,
                 'stock': product.stock,
-                'category': {
-                    'id': product.category.id,
-                    'name': product.category.name,
-                    'image': product.category.image
-                }
+                'category':product.category_id
             }
             for product in products
+         
         ]
         
-        return jsonify(product_list), 200  # Return the list as JSON
+        return jsonify(product_list), 200  
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -36,7 +35,6 @@ def get_all_products():
 def add_product():
     try:
         data = request.get_json()
-
         name = data.get('name')
         description = data.get('description')
         image = data.get('image')
@@ -134,3 +132,24 @@ def get_products_by_category(category_id):
 
     except Exception as e:
         return jsonify({"message": str(e)}), 500
+@bp.route("/Update_quantite",methods=["POST"])
+def Update_produit():
+  try:
+    data=request.get_json()
+    id_produit=data.get('id_produit')
+    id_user=data.get('id_user')
+    quantite=data.get('quantite')
+    if not id_produit or not id_user or not quantite :
+        return jsonify({"message":"invlaide request"}),400
+    user=User_services.get_user(id_user)
+    if not user.isAdmin:
+         return jsonify({"message":"no Admin"}),200
+    etat=Services_produit.modifie_quantite(id_produit,quantite)
+    if not etat:
+        return jsonify({"message":"probleme  leur de modification"}),200
+    return jsonify({"message":"la modification est valide merci"})
+  except Exception as e:
+      return jsonify({"message":str(e)})
+    
+    
+

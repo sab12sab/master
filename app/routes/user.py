@@ -9,6 +9,7 @@ def signup():
     try:
         # Get data from the request
         data = request.get_json()
+        isAdmin = data.get('isAdmin')
         firstname = data.get('firstname')
         lastname = data.get('lastname')
         email = data.get('email')
@@ -27,6 +28,7 @@ def signup():
 
         # Create a new User
         new_user = User(
+            isAdmin=isAdmin,
             firstname=firstname,
             lastname=lastname,
             email=email,
@@ -63,12 +65,10 @@ def login():
         # Check if the password matches
         if not bcrypt.check_password_hash(user.password, password):
             return jsonify({"message": "Invalid credentials"}), 401
-
-
-
         return jsonify({
             "message": "Login successful",
-            "user_id": user.id
+            "id_user": user.id,
+            "isAdmin":user.isAdmin
         }), 200
 
     except Exception as e:

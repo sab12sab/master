@@ -10,7 +10,7 @@ import Dashboard from "@/Pages/Dashboard";
 
 import AdminProdPage from "@/Pages/Admin_prod";
 import { Loginfom2 } from "@/components/Login_form2";
-import Login from "@/Pages/login";
+import Login from "@/Pages/Login";
 
 export const index_routage = createBrowserRouter([
   {

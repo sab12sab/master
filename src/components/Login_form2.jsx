@@ -4,43 +4,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
 import { Mail } from "lucide-react";
-import { useState } from "react";
-
+import { useContext, useState } from "react";
+import { AuthContext } from "@/ContexT/ContextAPI";
 export function Loginfom2({ className, ...props }) {
   const navigate = useNavigate();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-
-  const handleSubmit = async (e) => {
+  const {login,user} = useContext(AuthContext);
+  const handleSubmit =  (e) => {
     e.preventDefault();
-    try {
-      const response = await fetch("http://localhost:5000/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
-      });
-
-      if (!response.ok) {
-        const result = await response.json();
-        setError(result.message);
-      }
-
-      const result = await response.json();
-      console.log("Login successful:", result);
-      localStorage.setItem("user", result.user_id);
-      return result;
-    } catch (error) {
-      console.error("Error logging in:", error);
-      throw error;
-    }
-  };
+     login({email, password});
+     
+  }
+ 
   return (
     <form
       onSubmit={handleSubmit}
