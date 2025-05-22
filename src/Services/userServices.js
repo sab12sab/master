@@ -8,10 +8,12 @@ export const Login=(email,password)=>{
 export const test=()=>{
     return axiosInstance.get("/teste/test")
 }
-export const signup=(name,email,password)=>{
-    return axiosInstance.post("/signup",{
-        name:name,
+export const signup=(firstName,lastName,email,password,isAdmin)=>{
+    return axiosInstance.post("/auth/signup",{
+        firstname:firstName,
+        lastname:lastName,
         email:email,
-        password:password
+        password:password,
+        isAdmin:isAdmin
     })
 }

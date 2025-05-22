@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 class Product(db.Model):
     __tablename__ = 'products'
-    id= db.Column(db.Integer,db.Identity(), primary_key=True,)
+    id= db.Column(db.Integer, primary_key=True,)
     name = db.Column(db.String(length=30), nullable=False)
     description = db.Column(db.String(length=255), nullable=False)
     image = db.Column(db.String(255), nullable=False)

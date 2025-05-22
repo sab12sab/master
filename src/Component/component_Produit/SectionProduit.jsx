@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from "react";
 
 export default function SectionProduit() {
-  // Données des catégories (les mêmes que dans votre SectionCategories)
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  
+  // État pour la catégorie sélectionnée (par défaut "Tous")
+  const [categorieSelectionnee, setCategorieSelectionnee] = useState("Tous");
+
   const fetchCategories = async () => {
     try {
       const response = await fetch("http://localhost:5000/category/");
@@ -12,15 +17,16 @@ export default function SectionProduit() {
       }
       const data = await response.json();
       console.log(data.categories);
-
       setCategories(data.categories);
     } catch (err) {
       console.error("Error fetching categories:", err);
       setError(err.message);
     }
   };
-  const fetchProducts = async () => {
+
+  const fetchAllProducts = async () => {
     try {
+      setLoading(true);
       const response = await fetch("http://localhost:5000/products/");
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
@@ -30,25 +36,48 @@ export default function SectionProduit() {
     } catch (err) {
       console.error("Error fetching products:", err);
       setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchProductsByCategory = async (categoryId) => {
+    try {
+      setLoading(true);
+      const response = await fetch(`http://localhost:5000/products/category/${categoryId}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const data = await response.json();
+      setProducts(data.products);
+    } catch (err) {
+      console.error("Error fetching products by category:", err);
+      setError(err.message);
+      setProducts([]); // Réinitialiser les produits en cas d'erreur
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchCategories();
-    fetchProducts();
+    fetchAllProducts();
   }, []);
-  // Données des produits avec des images réelles pour chaque article
 
-  // État pour la catégorie sélectionnée (par défaut "Tous")
-  const [categorieSelectionnee, setCategorieSelectionnee] = useState("Tous");
-
-  // Produits filtrés en fonction de la catégorie sélectionnée
-  const produitsFiltres =
-    categorieSelectionnee === "Tous"
-      ? products
-      : products.filter(
-          (produit) => produit.category.name === categorieSelectionnee
-        );
+  // Gérer le changement de catégorie
+  const handleCategoryChange = (categoryName) => {
+    setCategorieSelectionnee(categoryName);
+    
+    if (categoryName === "Tous") {
+      fetchAllProducts();
+    } else {
+      // Trouver l'ID de la catégorie sélectionnée
+      const selectedCategory = categories.find(cat => cat.name === categoryName);
+      if (selectedCategory) {
+        fetchProductsByCategory(selectedCategory.id);
+      }
+    }
+  };
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -71,13 +100,16 @@ export default function SectionProduit() {
           <div className="flex flex-wrap gap-2 mb-4">
             {/* Bouton "Tous" */}
             <button
-              onClick={() => setCategorieSelectionnee("Tous")}
+              onClick={() => handleCategoryChange("Tous")}
+              disabled={loading}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-colors
                 ${
                   categorieSelectionnee === "Tous"
                     ? "bg-gray-900 text-white"
                     : "bg-gray-200 text-gray-800 hover:bg-gray-300"
-                }`}
+                }
+                ${loading ? "opacity-50 cursor-not-allowed" : ""}
+              `}
             >
               Tous
             </button>
@@ -86,13 +118,16 @@ export default function SectionProduit() {
             {categories.map((categorie) => (
               <button
                 key={categorie.id}
-                onClick={() => setCategorieSelectionnee(categorie.name)}
+                onClick={() => handleCategoryChange(categorie.name)}
+                disabled={loading}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-colors
                   ${
                     categorieSelectionnee === categorie.name
                       ? "bg-gray-900 text-white"
                       : "bg-gray-200 text-gray-800 hover:bg-gray-300"
-                  }`}
+                  }
+                  ${loading ? "opacity-50 cursor-not-allowed" : ""}
+                `}
               >
                 {categorie.name}
               </button>
@@ -109,19 +144,35 @@ export default function SectionProduit() {
               ? "Tous nos produits"
               : `Catégorie: ${categorieSelectionnee}`}
             <span className="text-gray-500 text-lg ml-2">
-              ({produitsFiltres.length} produits)
+              ({products.length} produits)
             </span>
           </h2>
 
-          {produitsFiltres.length === 0 ? (
+          {/* Affichage de l'erreur */}
+          {error && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+              Erreur: {error}
+            </div>
+          )}
+
+          {/* Indicateur de chargement */}
+          {loading && (
+            <div className="text-center py-12">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+              <p className="mt-2 text-gray-500">Chargement des produits...</p>
+            </div>
+          )}
+
+          {/* Affichage des produits */}
+          {!loading && products.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-gray-500">
                 Aucun produit trouvé dans cette catégorie.
               </p>
             </div>
-          ) : (
+          ) : !loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {produitsFiltres.map((produit) => (
+              {products.map((produit) => (
                 <div key={produit.id} className="group">
                   <div className="bg-white rounded-lg shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md">
                     <div className="relative pb-[100%] overflow-hidden">
@@ -136,7 +187,7 @@ export default function SectionProduit() {
                         {produit.name}
                       </h3>
                       <p className="text-gray-500 text-sm mb-2">
-                        {produit.category.name}
+                        {produit.category ? produit.category.name : 'Catégorie non définie'}
                       </p>
                       <p className="text-gray-900 font-bold">
                         {produit.price} €
@@ -149,7 +200,7 @@ export default function SectionProduit() {
                 </div>
               ))}
             </div>
-          )}
+          ) : null}
         </div>
       </section>
     </div>

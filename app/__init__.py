@@ -14,7 +14,7 @@ bcrypt = Bcrypt()
 def create_app():
     app = Flask(__name__)
     CORS(app)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost/Golden_spark2'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root@localhost:3307/test'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     db.init_app(app)

@@ -5,9 +5,9 @@ export default function SectionAccueil() {
     
     // Tableau des images du carrousel
     const images = [
-        "photos/golden_spark/acc/Jewellery Photography For Abbott Lyon.jpg",
-        "photos/golden_spark/acc/téléchargement (5).jpg",
-        "/golden_spark/chunky_bracelet/1.jpg",
+        "photos/golden_spark/all (2)/home/home2.jpg",
+        "photos/golden_spark/all (2)/earings/earings.jpg",
+        "photos/golden_spark/all (2)/necklaces/neclaces.jpg",
         "/golden_spark/boite/1.jpg",    ];
     
     // Fonction pour passer à la diapositive suivante

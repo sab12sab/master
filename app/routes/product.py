@@ -113,6 +113,7 @@ def update_product(id):
 @bp.route('/category/<int:category_id>', methods=['GET'])
 def get_products_by_category(category_id):
     try:
+        print(category_id)
         products = Product.query.filter_by(category_id=category_id).all()
 
         if not products:

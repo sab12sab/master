@@ -75,7 +75,7 @@ export default function AdminNav() {
                         <Link to="/dashboard" className="text-sm tracking-widest hover:text-yellow-600 transition-colors font-medium">Dashboard</Link>
                         <Link to="/admin_prod" className="text-sm tracking-widest hover:text-yellow-600 transition-colors font-medium">Gestion Produit</Link>
                         <Link to="/admin" className="text-sm tracking-widest hover:text-yellow-600 transition-colors font-medium">Gestion Catégorie</Link>
-                        
+                        <Link to="/commande" className="text-sm tracking-widest hover:text-yellow-600 transition-colors font-medium">Commandes </Link>
                     </nav>
                 </div>
             </div>

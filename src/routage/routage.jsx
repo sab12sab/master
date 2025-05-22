@@ -7,6 +7,8 @@ import Produit from "@/Pages/Produit";
 import Contact from "@/Pages/Contact";
 import Admin from "@/Pages/Admin";
 import Dashboard from "@/Pages/Dashboard";
+import Commande from "@/Pages/Commande";
+
 
 import AdminProdPage from "@/Pages/Admin_prod";
 import { Loginfom2 } from "@/components/Login_form2";
@@ -58,6 +60,11 @@ export const index_routage = createBrowserRouter([
     path: "/dashboard",
     element: <Dashboard></Dashboard>
   },
+  {
+    path: "/commande",
+    element: <Commande></Commande>
+  },
+  
 
 
 

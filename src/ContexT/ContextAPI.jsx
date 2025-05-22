@@ -8,23 +8,30 @@ export const AuthProvider = ({ children }) => {
   const [category,setcategory]=useState([])
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const get_category=async()=>{
+  const signup_h=async({firstName,lastName,email,password,isAdmin})=>{
     try{
-      const response=await categroy.Get_all_category();
+      
+      const response=await auth.signup(firstName,lastName,email,password,isAdmin);
       console.log(response)
-    }catch (err) {
-      setError(err.response.data.message);
+      if(response.status===201){
+        window.location.href="/"
+      }else{
+        alert("none")
+      }
+    }catch (err){
+
+       console.log(err)
     } finally {
       setLoading(false);
     }
   }
   const login= async ({email, password}) => {
     setLoading(true);
+    
     try {
       const response = await auth.Login(email, password);
-      setUser(response.data.user);
-      setError(null);
       console.log(response)
+      setUser(response.data)
       if(response.status===200 ){
         if (response.data.isAdmin){
           window.location.href="/dashboard";
@@ -40,7 +47,7 @@ export const AuthProvider = ({ children }) => {
   };
   
   return (
-    <AuthContext.Provider value={{user, login, loading, error}}>
+    <AuthContext.Provider value={{user, login,signup_h, loading, error}}>
       {children}
     </AuthContext.Provider>
   );

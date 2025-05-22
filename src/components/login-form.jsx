@@ -4,47 +4,24 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
 import { Mail } from "lucide-react";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { signup } from "@/Services/userServices";
+import { AuthContext } from "@/ContexT/ContextAPI";
 
 export function LoginForm({ className, ...props }) {
   const navigate = useNavigate();
-
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
+  const [isAdmin,setsadmin]=useState(false)
 
+  const {signup_h}=useContext(AuthContext)
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await fetch("http://localhost:5000/auth/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          firstname: firstName,
-          lastname: lastName,
-          email: email,
-          password: password,
-        }),
-      });
-
-      if (!response.ok) {
-        const result = await response.json();
-        setError(result.message);
-      }
-      const result = await response.json();
-      console.log("User created successfully:", result);
-      localStorage.setItem("user", result.user_id);
-      return result;
-    } catch (error) {
-      console.error("Error creating user:", error);
-      setError(error);
-      throw error;
-    }
+    signup_h({firstName,lastName,email,password,isAdmin})
   };
   return (
     <form
@@ -105,18 +82,7 @@ export function LoginForm({ className, ...props }) {
             required
           />
         </div>
-        <div className="grid gap-3">
-          <div className="flex items-center">
-            <Label htmlFor="password">confirm Password</Label>
-          </div>
-          <Input
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            id="password"
-            type="password"
-            required
-          />
-        </div>
+       
         <Button type="submit" className="w-full">
           Login
         </Button>

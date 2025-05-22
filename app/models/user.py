@@ -11,3 +11,5 @@ class User(db.Model):
     isAdmin = db.Column(db.Boolean, nullable=False, default=False)
     def __repr__(self):
      return f"<User {self.name} - ${self.price}>"
+    
+    
