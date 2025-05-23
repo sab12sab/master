@@ -100,7 +100,8 @@ export default function AdminNav() {
             
             // Fermer le modal
             toggleProfileModal();
-            
+            localStorage.clear();
+
             // Rediriger vers la page d'accueil
             window.location.href = "/";
             // Alternative avec React Router:

@@ -152,5 +152,25 @@ def Update_produit():
   except Exception as e:
       return jsonify({"message":str(e)})
     
-    
+@bp.route('/getproduit_by_id/<int:produit_id>',methods=["GET"])
+def get_produit_by_id(produit_id):
+    try:
+        produit=Product.query.filter_by(id=produit_id).first()
+        if not produit :
+         return jsonify({"message":"invlaide request"}),400
+        produit_return=[
+            {
+                "id":produit.id,
+                "name":produit.name,
+                "description":produit.description,
+                "image":produit.image,
+                "price":produit.price,
+                "stock":produit.stock
+            }
+        ]
+        return jsonify({"products": produit_return}), 200
+    except Exception as e:
+      return jsonify({"message":str(e)})
+
+
 

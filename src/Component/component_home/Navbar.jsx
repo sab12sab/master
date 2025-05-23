@@ -1,6 +1,8 @@
 import { Link, useNavigate, useNavigation } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { LogOut } from 'lucide-react';
 
+import { Button } from '@/components/ui/button';
 export default function Navbar() {
     // États pour gérer l'ouverture des modales
     const [searchOpen, setSearchOpen] = useState(false);
@@ -9,6 +11,7 @@ export default function Navbar() {
     const [profileOpen, setProfileOpen] = useState(false);
     const [contrastEnabled, setContrastEnabled] = useState(false);
     const [articleDropdownOpen, setArticleDropdownOpen] = useState(false);
+    const [etat_o,setetat]=useState()
     const naviaget=useNavigate()
     // Fonction pour fermer toutes les modales
     const closeAllModals = () => {
@@ -17,6 +20,13 @@ export default function Navbar() {
         setCartOpen(false);
         setProfileOpen(false);
     };
+ useEffect(() => {
+  const item = localStorage.getItem("isAdmin");
+  console.log("isAdmin in localStorage:", item);
+  const isAdmin = item === "true";
+  setetat(isAdmin);
+}, []);
+
 
     // Fonction pour ouvrir une modale spécifique
     const toggleModal = (modal) => {
@@ -73,7 +83,7 @@ export default function Navbar() {
                             {/* Logo Golden Spark avec taille moyenne */}
                             <div className="h-14 flex items-center">
                                 <img 
-                                    src="photos\bague.png" 
+                                    src="/photos/bague.png" 
                                     alt="Golden Spark Logo" 
                                     className="h-full" 
                                 />
@@ -129,6 +139,20 @@ export default function Navbar() {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
                             </button>
+                       {!etat_o ? (
+  <Button
+    className="bg-red-500"
+    onClick={(e) => {
+      e.preventDefault();
+      localStorage.clear();
+      alert("deconnecte")
+    }}
+  >
+    <LogOut />
+  </Button>
+) : null}
+
+
                         </div>
                     </div>
                 </div>

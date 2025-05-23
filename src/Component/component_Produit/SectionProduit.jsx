@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function SectionProduit() {
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  
+  const [valide,setvalide]=useState(false)
+  const navigate=useNavigate()
+  const windowWidth = window.innerWidth;
+  const windowHeight = window.innerHeight;
+  const top=windowHeight/2
+  const left =windowWidth/2
   // État pour la catégorie sélectionnée (par défaut "Tous")
   const [categorieSelectionnee, setCategorieSelectionnee] = useState("Tous");
 
@@ -58,7 +64,6 @@ export default function SectionProduit() {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     fetchCategories();
     fetchAllProducts();
@@ -80,7 +85,7 @@ export default function SectionProduit() {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-gray-50 relative min-h-screen">
       {/* En-tête de la page */}
       <header className="bg-white shadow">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -137,7 +142,7 @@ export default function SectionProduit() {
       </section>
 
       {/* Grille des produits */}
-      <section className="py-12">
+      <section className="py-12 ">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-8">
             {categorieSelectionnee === "Tous"
@@ -171,9 +176,11 @@ export default function SectionProduit() {
               </p>
             </div>
           ) : !loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div  className="grid grid-cols-1 sm:grid-cols-2 relative lg:grid-cols-3 xl:grid-cols-4 gap-6">
+             
               {products.map((produit) => (
-                <div key={produit.id} className="group">
+                <div key={produit.id} className="group  ">
+                 
                   <div className="bg-white rounded-lg shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md">
                     <div className="relative pb-[100%] overflow-hidden">
                       <img
@@ -190,9 +197,9 @@ export default function SectionProduit() {
                         {produit.category ? produit.category.name : 'Catégorie non définie'}
                       </p>
                       <p className="text-gray-900 font-bold">
-                        {produit.price} €
+                        {produit.price} Dh
                       </p>
-                      <button className="mt-4 w-full bg-gray-900 text-white py-2 rounded hover:bg-gray-800 transition-colors">
+                      <button onClick={(e)=>{e.preventDefault();navigate(`/produit_details/${produit.id}`)}} className="mt-4 w-full bg-gray-900 text-white py-2 rounded hover:bg-gray-800 transition-colors">
                         Ajouter au panier
                       </button>
                     </div>
@@ -202,7 +209,11 @@ export default function SectionProduit() {
             </div>
           ) : null}
         </div>
+         
       </section>
+                 
+ 
     </div>
+    
   );
 }

@@ -13,6 +13,10 @@ import Commande from "@/Pages/Commande";
 import AdminProdPage from "@/Pages/Admin_prod";
 import { Loginfom2 } from "@/components/Login_form2";
 import Login from "@/Pages/Login";
+import ProtectedRoute from "@/ ProtectedRoute/ProtectedRoute";
+import Loginvarifei from "@/ ProtectedRoute/loginrouteur";
+import Porduit_deatils from "@/Pages/Produitdetails";
+import Commande_Pro from "@/ ProtectedRoute/commande";
 
 export const index_routage = createBrowserRouter([
   {
@@ -26,7 +30,11 @@ export const index_routage = createBrowserRouter([
 
   {
     path: "/login",
-    element: <Login></Login>
+    element: (
+      <Loginvarifei>
+        <Login></Login>
+      </Loginvarifei>
+    )
   },
 
   {
@@ -58,11 +66,23 @@ export const index_routage = createBrowserRouter([
 
   {
     path: "/dashboard",
-    element: <Dashboard></Dashboard>
+    element: (
+      <ProtectedRoute>
+        <Dashboard></Dashboard>
+      </ProtectedRoute>
+    )
   },
   {
     path: "/commande",
     element: <Commande></Commande>
+  },
+    {
+    path: "/produit_details/:id",
+    element:(
+      <Commande_Pro>
+        <Porduit_deatils></Porduit_deatils>
+      </Commande_Pro>
+    )
   },
   
 
